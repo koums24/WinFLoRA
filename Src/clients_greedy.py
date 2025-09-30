@@ -10,23 +10,23 @@ class GreedyNoiseSelector:
     def __init__(
         self,
         sigma_max: float,
-        alpha: List[float],      # 每个 client 的 alpha（长度 = num_clients）
-        beta:  List[float],      # 每个 client 的 beta  （长度 = num_clients）
-        sigma_init: List[float], # 外部传入的首轮 sigma_t
-        c: float = 0.05,          # ε_t = min(1, c / sqrt(t))
-        use_ema: bool = True,    # 非平稳环境推荐 True
-        rho: float = 0.1         # EMA 系数（0.05~0.2 常用）
+        alpha: List[float],      # alpha for each client (length = num_clients)
+        beta:  List[float],      # beta for each client (length = num_clients)
+        sigma_init: List[float], # externally provided initial sigma_t
+        c: float = 0.05,          # epsilon_t = min(1, c / sqrt(t))
+        use_ema: bool = True,    # Recommended for non-stationary environments
+        rho: float = 0.1         # EMA coefficient (0.05~0.2 commonly used)
     ):
         assert sigma_max > 0, "sigma_max must be > 0"
 
-        # 候选噪声集合（离散臂）
+        # Candidate noise set (discrete arms)
         # self.S_base = [0.01, 0.2, 0.4, 0.6, 0.8, 1.0]
         self.S_base = [0.01, 0.1, 0.5, 1.0]
 
         self.sigma_max = float(sigma_max)
         self.S = [s * self.sigma_max for s in self.S_base]
 
-        # 固定 alpha/beta（逐个归一化，确保 α+β=1 且非负）
+        # Fixed alpha/beta (normalize individually to ensure alpha+beta=1 and non-negative)
         alpha = np.asarray(alpha, dtype=float).reshape(-1)
         beta  = np.asarray(beta,  dtype=float).reshape(-1)
         assert len(alpha) == len(beta), "alpha and beta must have the same length"
@@ -34,28 +34,28 @@ class GreedyNoiseSelector:
         self.alpha: List[float] = alpha
         self.beta:  List[float] = beta
 
-        # 首轮 sigma：外部传入并存成属性（不强制贴齐网格；计账时会贴齐）
+        # Initial sigma: externally provided and stored as an attribute (not forced to snap to grid; will be snapped for accounting)
         sigma_init = np.asarray(sigma_init, dtype=float).reshape(-1)
         if len(sigma_init) != self.num_clients:
             raise ValueError("sigma_init length must equal number of clients")
         self.sigma = sigma_init.tolist()
 
-        # 经验均值与选择次数
+        # Empirical mean and selection count
         self.mu: List[Dict[float, float]] = [{s: 0.0 for s in self.S} for _ in range(self.num_clients)]
         self.N:  List[Dict[float, int]]   = [{s: 0   for s in self.S} for _ in range(self.num_clients)]
 
-        # 策略超参数
+        # Policy hyperparameters
         self.c = float(c)
         self.use_ema = bool(use_ema)
         self.rho = float(rho)
         
     def select_ucb_arm(self, mu, N, t, arms, c=1.0):
-            # 先试未尝试过的臂
+            # First, try unexplored arms
             untried = [s for s in arms if N[s] == 0]
             if untried:
                 return random.choice(untried)
 
-            # 避免 log(0)
+            # Avoid log(0)
             t = max(2, int(t))
             best_s, best_idx = None, float("-inf")
             for s in arms:
@@ -64,11 +64,11 @@ class GreedyNoiseSelector:
                     best_s, best_idx = s, idx
             return best_s
         
-    # ----------------- 核心接口 -----------------
+    # ----------------- Core Interface -----------------
     def update_and_select_next(
         self,
         t: int,
-        acc_t                 # list 或 1D np.array（建议已在 [0,1]）
+        acc_t                 # list or 1D np.array (recommended to be in [0,1])
     ) -> List[float]:
     
         acc_t = np.asarray(acc_t, dtype=float).reshape(-1)
@@ -78,16 +78,16 @@ class GreedyNoiseSelector:
         sigma_next = np.zeros(self.num_clients, dtype=float)
 
         for i in range(self.num_clients):
-            # 1) 贴齐本轮使用的 σ 到候选网格（计账用）
+            # 1) Snap the sigma used in this round to the candidate grid (for accounting)
             s_prev = self._snap_to_grid(float(self.sigma[i]))
 
-            # 2) 当期效用：U_obs = α * G + β * P
+            # 2) Current utility: U_obs = alpha * G + beta * P
             U_obs, norm_utility = compute_utilities(self.alpha[i], self.beta[i], acc_t[i], s_prev, self.sigma_max)
-            # G_it = self._clip01(float(acc_t[i]))      # 若未归一化请先处理
+            # G_it = self._clip01(float(acc_t[i]))      # Process if not normalized
             # P_it = s_prev / self.sigma_max
             # U_obs = self.alpha[i] * G_it + self.beta[i] * P_it
 
-            # 3) 更新经验均值
+            # 3) Update empirical mean
             if self.use_ema:
                 self.mu[i][s_prev] = (1.0 - self.rho) * self.mu[i][s_prev] + self.rho * U_obs
                 self.N[i][s_prev] += 1
@@ -96,8 +96,8 @@ class GreedyNoiseSelector:
                 n = self.N[i][s_prev]
                 self.mu[i][s_prev] += (U_obs - self.mu[i][s_prev]) / n
             
-            # 4）UCB
-            # t_i: 该 client 的累计尝试次数（或全局轮数），至少从 1 开始
+            # 4) UCB
+            # t_i: cumulative attempts for this client (or global round), starting from at least 1
             t_i = max(1, sum(self.N[i].values()))
             # c = self.c / (self.alpha[i]/self.beta[i])
             c = self.c
@@ -106,7 +106,7 @@ class GreedyNoiseSelector:
             
             sigma_next[i] = s_next
 
-        # 写回属性，并返回
+        # Write back to attribute and return
         self.sigma = sigma_next.tolist()
         return self.sigma
 
@@ -123,7 +123,7 @@ class GreedyNoiseSelector:
         self.sigma = sigma_new.tolist()
 
     
-    # ----------------- 工具函数 -----------------
+    # ----------------- Utility Functions -----------------
 
     def _snap_to_grid(self, sigma: float) -> float:
         best_s, best_d = self.S[0], float("inf")
