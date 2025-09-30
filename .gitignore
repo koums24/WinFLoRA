@@ -1,0 +1,7 @@
+artifacts/
+*.pt
+*.pth
+*.json
+*.bin
+*.safetensors
+*.pyc
