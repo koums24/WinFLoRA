@@ -1,4 +1,4 @@
-# WinFLoRA: Weight-based Incentive for Federated LoRA with Privacy Heterogeneity
+# WinFLoRA: Incentivizing Client-Adaptive Aggregation in Federated LoRA under Privacy Heterogeneity
 
 The code of  WinFLoRA is presented here comprehensively and systematically.
 
@@ -33,3 +33,4 @@ conda env create -f requirements.yaml
 ### 3. Additional Experimental Setup:
 
 We supplement a detailed experimental setup, including dataset information and LLMs in our evaluation ([View the Setup](./Experiment_setup.md)).
+

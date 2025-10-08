@@ -19,8 +19,9 @@ class GreedyNoiseSelector:
     ):
         assert sigma_max > 0, "sigma_max must be > 0"
 
-        # Candidate noise set (discrete arms)
+        # Noise action set
         # self.S_base = [0.01, 0.2, 0.4, 0.6, 0.8, 1.0]
+        # self.S_base = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8,0.9, 1.0]
         self.S_base = [0.01, 0.1, 0.5, 1.0]
 
         self.sigma_max = float(sigma_max)
@@ -83,9 +84,6 @@ class GreedyNoiseSelector:
 
             # 2) Current utility: U_obs = alpha * G + beta * P
             U_obs, norm_utility = compute_utilities(self.alpha[i], self.beta[i], acc_t[i], s_prev, self.sigma_max)
-            # G_it = self._clip01(float(acc_t[i]))      # Process if not normalized
-            # P_it = s_prev / self.sigma_max
-            # U_obs = self.alpha[i] * G_it + self.beta[i] * P_it
 
             # 3) Update empirical mean
             if self.use_ema:
@@ -99,11 +97,9 @@ class GreedyNoiseSelector:
             # 4) UCB
             # t_i: cumulative attempts for this client (or global round), starting from at least 1
             t_i = max(1, sum(self.N[i].values()))
-            # c = self.c / (self.alpha[i]/self.beta[i])
             c = self.c
             s_next = self.select_ucb_arm(self.mu[i], self.N[i], t_i, self.S, c=c/5)
-            
-            
+        
             sigma_next[i] = s_next
 
         # Write back to attribute and return

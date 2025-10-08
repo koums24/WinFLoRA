@@ -32,7 +32,7 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint
 
 from peft import get_peft_model, LoraConfig, TaskType, PeftModel
-from rpca import RPCA,RPCA_weights, build_rpca_M_from_B, build_rpca_M_from_A, noise_by_residual_pca_B, noise_by_residual_pca_B_loo, noise_by_residual_pca_DeltaW_loo, noise_by_residual_pca_DeltaW ,noise_by_residual_pca_A_loo, noise_by_residual_pca_A
+from rpca import RPCA, RPCA_weights, build_rpca_M_from_B, build_rpca_M_from_A, noise_by_residual_pca_B_loo,noise_by_residual_pca_A_loo
 from dataset_model import NewsDataset, GPT2ForNewsClassification
 from options import get_args
 from clients_greedy import GreedyNoiseSelector
@@ -130,7 +130,7 @@ df_train = shuffle(df_train, random_state=42).reset_index(drop=True)
 texts_original = df_train['text'].tolist()
 labels_original = df_train['label'].tolist()
 
-# ===== 全局 Train/Val 划分（严格不重叠）=====
+# ===== Split Train/Val=====
 all_idx = np.arange(len(texts_original))
 global_train_idx, global_val_idx = train_test_split( all_idx, test_size=0.2, random_state=42, shuffle=True, stratify=None)
 
@@ -397,7 +397,6 @@ if __name__ == "__main__":
     r = rng_gamma.normal(loc=5, scale=(10-1)/6, size=num_clients)
     alpha = np.ones_like(r) # alpha = 1
     # beta = 1.0 / r  # gamma = 1 / r ∈ (0.1, 1]
-    beta = [0.1, 0.2, 0.2, 0.2, 0.2, 0.5, 0.5, 0.5 ,0.8 ,0.8]
     beta = np.round(beta, 3)
 
     rng_sigma = np.random.default_rng(NOISE_SEED)
@@ -547,13 +546,12 @@ if __name__ == "__main__":
             # estimate by only B
             sigma_true_std = RPCA_weights(CLIENT_SIGMA, client_models, num_successful_clients)
         elif weight_mode == 'pca':
-            # 1) 公共键
             key_sets_B = [{k for k in mp.keys() if "lora_B" in k} for mp in client_models]
             b_keys = sorted(set.intersection(*key_sets_B))
             key_sets_A = [{k for k in mp.keys() if "lora_A" in k} for mp in client_models]
             a_keys = sorted(set.intersection(*key_sets_A))
             
-            # 2) 残差PCA估噪 - B-loo version
+            # noise estimate
             sigma_hat_B_loo = noise_by_residual_pca_B_loo(client_models, b_keys, rank_k=1)  # np.ndarray, shape=(C,)
             eps = 1e-8
             weights = (1.0 / (sigma_hat_B_loo + eps)) ** args.tau
@@ -781,10 +779,8 @@ if __name__ == "__main__":
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
-        # 计算 t+1 轮要用的 sigma
-        # sigma_next = selector.update_and_select_next(t=t, acc_t=metric_values_agg[0], sigma_t=CLIENT_SIGMA)
+     
         utility_acc_t = metric_values_agg.get('eval_accuracy')
-        # acc_t = surpassed_percentage(weights)
         utilities, norm_utilities = compute_utilities(alpha, beta, utility_acc_t, sigmas, SIGMA_MAX)
         norm_utilities_mean = float(np.nanmean(np.asarray(norm_utilities, dtype=float).reshape(-1)))
         Sigma_mean = float(np.nanmean(np.asarray(sigmas, dtype=float).reshape(-1)))

@@ -34,8 +34,8 @@ def dirichlet_partition_indices(labels, num_clients, alpha=0.3, seed=42):
             for k in classes:
                 k_idx = np.where(labels == k)[0]
                 rng.shuffle(k_idx)
-                p = rng.dirichlet(np.full(num_clients, alpha))       # 各客户端占比
-                counts = rng.multinomial(len(k_idx), p)              # 对应该类的样本数
+                p = rng.dirichlet(np.full(num_clients, alpha))       
+                counts = rng.multinomial(len(k_idx), p)             
                 s = 0
                 for cid, c in enumerate(counts):
                     if c > 0:
@@ -101,7 +101,6 @@ def frobenius_of_lora_AB(lora_params: dict):
     }
     
 def add_noise_to_lora(lora_params: dict, sigmaA: float, sigmaB: float, seed: int = None):
-    """对单个 client 的 LoRA 参数 (A/B) 加高斯噪声，返回新的字典（不改原始字典）。"""
     g = torch.Generator(device='cpu')
     if seed is not None:
         g.manual_seed(int(seed))

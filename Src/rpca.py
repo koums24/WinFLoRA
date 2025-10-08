@@ -63,19 +63,11 @@ class RPCA:
         return L, S
 
     def estimate_noise(self, axis: int = 0) -> np.ndarray:
-        """
-        Return σ_hat for each column (default) as ||S_:i||_2.
-        Call after fit().
-        """
         if self.S_ is None:
             raise RuntimeError("Call fit(M) before estimate_noise().")
         return np.linalg.norm(self.S_, axis=axis)
 
     def weights_from_noise(self, sigma_hat: np.ndarray, eps: float = 1e-12) -> np.ndarray:
-        """
-        Convert noise estimates into inverse-proportional normalized weights.
-        Larger noise -> smaller weight.
-        """
         sigma_hat = np.asarray(sigma_hat, dtype=np.float64)
         if np.allclose(sigma_hat, 0):
             return np.ones_like(sigma_hat) / sigma_hat.size
@@ -109,16 +101,6 @@ def _to_numpy(x: Any) -> np.ndarray:
 
 def build_rpca_M_from_B(client_models: List[Dict[str, Any]],
                         dtype: np.dtype = np.float32) -> np.ndarray:
-    """
-    Construct the RPCA input matrix M from LoRA-B weights.
-      - Each column corresponds to a client's flattened LoRA-B vector.
-      - Automatically uses the common key set of LoRA-B across all clients.
-    Args:
-      client_models: A list of dictionaries, e.g., [{ '...lora_B...': tensor/ndarray, ...}, ...]
-      dtype: Data type of the returned matrix (default float32)
-    Returns:
-      M: (d_B, num_clients)
-    """
     if not client_models:
         raise ValueError("client_models is empty.")
 
@@ -181,19 +163,6 @@ def build_rpca_M_from_A(client_models: List[Dict[str, Any]],
 
 def build_rpca_M_from_delta(client_models: List[Dict[str, Any]],
                             dtype: np.dtype = np.float32) -> np.ndarray:
-    """
-    Construct the RPCA input matrix M from delta weights (ΔW = B @ A).
-      - Each column is the flattened ΔW from a client.
-    Steps:
-      1) Find common base keys for A/B pairs across all clients.
-      2) Sort them naturally to fix the order.
-      3) For each client, compute and flatten ΔW for each base key and concatenate.
-    Args:
-      client_models: A list of dictionaries, e.g., [{ '...lora_A...': ..., '...lora_B...': ...}, ...]
-      dtype: Data type of the returned matrix (default float32)
-    Returns:
-      M: (d, num_clients)
-    """
     if not client_models:
         raise ValueError("client_models is empty.")
 
@@ -245,32 +214,6 @@ def build_rpca_M_from_delta(client_models: List[Dict[str, Any]],
         M = M.astype(dtype, copy=False)
     return M
 
-def noise_by_residual_pca_B(client_models, b_keys, rank_k=1):
-    # Construct M_B of shape (d, C)
-    cols = []
-    for mp in client_models:
-        flat = np.concatenate([_to_numpy(mp[k]).reshape(-1).astype(np.float32) for k in b_keys], axis=0)
-        cols.append(flat)
-    X = np.stack(cols, axis=1)                       # d x C
-
-    # Row-wise centering (remove common offset from all columns)
-    X = X - X.mean(axis=1, keepdims=True)
-
-    # SVD and remove the top-k shared low-rank subspaces
-    U, s, Vt = np.linalg.svd(X, full_matrices=False)
-    k_eff = max(0, min(rank_k, U.shape[1]-1))             # Avoid overflow if C is small
-    if k_eff > 0:
-        Uk = U[:, :k_eff]
-        R  = X - Uk @ (Uk.T @ X)
-        denom = max(X.shape[0] - k_eff, 1)
-    else:
-        R = X
-        denom = max(X.shape[0], 1)
-
-    # Estimate variance of residuals for each column -> sigma_hat
-    sigma_hat = np.sqrt((R**2).sum(axis=0) / denom)  # shape=(C,)
-    return sigma_hat
-
 def noise_by_residual_pca_B_loo(client_models, b_keys, rank_k=1):
     # Construct X of shape (d, C)
     cols = []
@@ -301,131 +244,7 @@ def noise_by_residual_pca_B_loo(client_models, b_keys, rank_k=1):
         sig[i] = float(np.linalg.norm(ri)**2 / denom)
     return np.sqrt(sig)  # sigma_hat_i
 
-
-def noise_by_residual_pca_DeltaW(client_models, a_keys, b_keys, rank_k=1):
-    dtype=np.float32
-    assert len(a_keys) == len(b_keys), "Number of A/B layers do not match"
-    # Construct X (d x C), each column is a flattened concatenation of all-layer ΔW
-    cols = []
-    for mp in client_models:
-        parts = []
-        for Ak, Bk in zip(a_keys, b_keys):
-            A = _to_numpy(mp[Ak]).astype(dtype)   # (r, in)
-            B = _to_numpy(mp[Bk]).astype(dtype)   # (out, r)
-            parts.append((B @ A).reshape(-1))
-        cols.append(np.concatenate(parts, axis=0))
-    X = np.stack(cols, axis=1).astype(dtype)      # d x C
-
-    # Row-wise centering
-    X = X - X.mean(axis=1, keepdims=True)
-
-    # SVD to remove shared low-rank subspace
-    U, s, Vt = np.linalg.svd(X, full_matrices=False)
-    k_eff = max(0, min(rank_k, U.shape[1]-1))
-    if k_eff > 0:
-        Uk = U[:, :k_eff]
-        R  = X - Uk @ (Uk.T @ X)
-        denom = max(X.shape[0] - k_eff, 1)
-    else:
-        R = X
-        denom = X.shape[0]
-
-    sigma_hat = np.sqrt((R**2).sum(axis=0) / denom)   # (C,)
-    return sigma_hat
-
-
-def noise_by_residual_pca_DeltaW_loo(client_models, a_keys, b_keys, rank_k=1):
-    """
-    LOO version: for column i, estimate subspace with other columns, then compute residual for column i; more robust.
-    Returns: sigma_hat (C,)
-    """
-    dtype=np.float32
-    assert len(a_keys) == len(b_keys), "Number of A/B layers do not match"
-    cols = []
-    for mp in client_models:
-        parts = []
-        for Ak, Bk in zip(a_keys, b_keys):
-            A = _to_numpy(mp[Ak]).astype(dtype)
-            B = _to_numpy(mp[Bk]).astype(dtype)
-            parts.append((B @ A).reshape(-1))
-        cols.append(np.concatenate(parts, axis=0))
-    X = np.stack(cols, axis=1).astype(dtype)      # d x C
-
-    d, C = X.shape
-    sigma = np.zeros(C, dtype=np.float64)
-
-    for i in range(C):
-        Xm = np.delete(X, i, axis=1)                       # d x (C-1)
-        Xm = Xm - Xm.mean(axis=1, keepdims=True)           # Row-wise centering (without i)
-        U, s, Vt = np.linalg.svd(Xm, full_matrices=False)
-        k_eff = max(0, min(rank_k, U.shape[1]-1))
-
-        mu = Xm.mean(axis=1, keepdims=True)
-        xi = (X[:, [i]] - mu)
-        if k_eff > 0:
-            Uk = U[:, :k_eff]
-            ri = xi - Uk @ (Uk.T @ xi)
-            denom = max(d - k_eff, 1)
-        else:
-            ri = xi
-            denom = d
-
-        sigma[i] = float(np.linalg.norm(ri)**2 / denom)
-
-    return np.sqrt(sigma)   # (C,)
-
-import numpy as np
-
-def _to_numpy(x):
-    try:
-        import torch
-        if isinstance(x, torch.Tensor):
-            return x.detach().cpu().numpy()
-    except Exception:
-        pass
-    return np.asarray(x)
-
-def noise_by_residual_pca_A(client_models, a_keys, rank_k=1):
-    """
-    Residual PCA: Estimate dense noise level for each client using only LoRA-A.
-    Args:
-      - client_models: List of parameter dictionaries for each client.
-      - a_keys: Ordered list of 'lora_A' keys, consistent for all clients.
-      - rank_k: Rank of the shared low-rank subspace (use 1 for small C).
-    Returns:
-      - sigma_hat: (C,) noise estimate for each client.
-    """
-    dtype=np.float32
-    # Construct X (d x C): each column is the flattened concatenation of all A layers
-    cols = []
-    for mp in client_models:
-        flat = np.concatenate([_to_numpy(mp[k]).astype(dtype).reshape(-1) for k in a_keys], axis=0)
-        cols.append(flat)
-    X = np.stack(cols, axis=1).astype(dtype)  # d x C
-
-    # Row-wise centering
-    X = X - X.mean(axis=1, keepdims=True)
-
-    # SVD to remove shared low-rank component
-    U, s, Vt = np.linalg.svd(X, full_matrices=False)
-    k_eff = max(0, min(rank_k, U.shape[1]-1))  # Avoid overflow for small C
-    if k_eff > 0:
-        Uk = U[:, :k_eff]
-        R  = X - Uk @ (Uk.T @ X)
-        denom = max(X.shape[0] - k_eff, 1)
-    else:
-        R = X
-        denom = X.shape[0]
-
-    sigma_hat = np.sqrt((R**2).sum(axis=0) / denom)  # (C,)
-    return sigma_hat
-
-
 def noise_by_residual_pca_A_loo(client_models, a_keys, rank_k=1):
-    """
-    LOO Residual PCA: for column i, estimate subspace with other columns, then compute residual for column i; more robust.
-    Returns (C,).
-    """
     dtype=np.float32
     cols = []
     for mp in client_models:
@@ -488,3 +307,13 @@ def RPCA_weights(CLIENT_SIGMA, client_models, num_successful_clients):
             # weights = [0.2,0.4,0.2,0.2]
     print(f"Client Weights based on estimated noise: [{', '.join(f'{w:.3f}' for w in weights)}]")
     return sigma_true_std
+
+
+def _to_numpy(x):
+    try:
+        import torch
+        if isinstance(x, torch.Tensor):
+            return x.detach().cpu().numpy()
+    except Exception:
+        pass
+    return np.asarray(x)
