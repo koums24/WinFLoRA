@@ -21,12 +21,12 @@ Five widely used large language models (LLMs) with instruction-following capabil
 
 #### Table: Finetuning Hyperparameters
 
-| Hyperparameter | GPT2-Large | Llama3.2-1B
+| Hyperparameter | GPT2-Large | TinyLlama
 | -------------- | ---------- | ---- | 
 | LoRA Rank      | 16         | 16          
 | LoRA α        | 32         | 32          
 | Dropout        | 0.1        | 0.1         
-| Learning Rate  | 2e-4       | 1e-4        
+| Learning Rate  | 2e-4       | 2e-4        
 | Epochs         | 3          | 3           
-| Max Length     | 512        |256         
+| Max Length     | 512        |256
 
