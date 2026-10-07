@@ -1,0 +1,220 @@
+{
+  "config": {
+    "source": "artifacts",
+    "artifact_dir": "noisy_tiny_agnews/artifacts",
+    "num_clients": 10,
+    "sigma_max": 0.1,
+    "noise_seed": 2025,
+    "estimator": "repo",
+    "rank_k": 1,
+    "out": "attack_results"
+  },
+  "honest_sigmas": [
+    0.012979102070910388,
+    0.05043332754415969,
+    0.04101718299411789,
+    0.031180120408636342,
+    0.009302222572784104,
+    0.06275652338602541,
+    0.037338177576945346,
+    0.054449936582120856,
+    0.06169634753141838,
+    0.05486868859698388
+  ],
+  "A1": {
+    "sweep": [
+      {
+        "scale": 1,
+        "attacker_sigma_true": 0.1,
+        "attacker_sigma_hat": 0.09994513235691185,
+        "attacker_weight": 0.04509872089944442,
+        "attacker_rank": 10,
+        "uniform_weight": 0.1,
+        "attacker_deltaW_noise_ratio": 239.0554820772183,
+        "aggregate_rel_error": 48.64039021831989
+      },
+      {
+        "scale": 2,
+        "attacker_sigma_true": 0.1,
+        "attacker_sigma_hat": 0.04997256617845593,
+        "attacker_weight": 0.07598190434538349,
+        "attacker_rank": 5,
+        "uniform_weight": 0.1,
+        "attacker_deltaW_noise_ratio": 239.0554820772183,
+        "aggregate_rel_error": 62.52334878612835
+      },
+      {
+        "scale": 4,
+        "attacker_sigma_true": 0.1,
+        "attacker_sigma_hat": 0.024986283089227963,
+        "attacker_weight": 0.12523987208681336,
+        "attacker_rank": 2,
+        "uniform_weight": 0.1,
+        "attacker_deltaW_noise_ratio": 239.0554820772183,
+        "aggregate_rel_error": 90.02845110465901
+      },
+      {
+        "scale": 8,
+        "attacker_sigma_true": 0.1,
+        "attacker_sigma_hat": 0.012493142603594047,
+        "attacker_weight": 0.19953526818119732,
+        "attacker_rank": 2,
+        "uniform_weight": 0.1,
+        "attacker_deltaW_noise_ratio": 239.0554820772183,
+        "aggregate_rel_error": 135.89338728671768
+      },
+      {
+        "scale": 16,
+        "attacker_sigma_true": 0.1,
+        "attacker_sigma_hat": 0.006246570772306991,
+        "attacker_weight": 0.30265550832403815,
+        "attacker_rank": 1,
+        "uniform_weight": 0.1,
+        "attacker_deltaW_noise_ratio": 239.0554820772183,
+        "aggregate_rel_error": 202.20631648118902
+      },
+      {
+        "scale": 32,
+        "attacker_sigma_true": 0.1,
+        "attacker_sigma_hat": 0.0031232853861534954,
+        "attacker_weight": 0.4304126248138008,
+        "attacker_rank": 1,
+        "uniform_weight": 0.1,
+        "attacker_deltaW_noise_ratio": 239.0554820772183,
+        "aggregate_rel_error": 285.69926102030576
+      },
+      {
+        "scale": 64,
+        "attacker_sigma_true": 0.1,
+        "attacker_sigma_hat": 0.0015616426930767477,
+        "attacker_weight": 0.5681598557530968,
+        "attacker_rank": 1,
+        "uniform_weight": 0.1,
+        "attacker_deltaW_noise_ratio": 239.0554820772183,
+        "aggregate_rel_error": 376.3177652404338
+      },
+      {
+        "scale": 128,
+        "attacker_sigma_true": 0.1,
+        "attacker_sigma_hat": 0.0007808214127246279,
+        "attacker_weight": 0.6961138037278897,
+        "attacker_rank": 1,
+        "uniform_weight": 0.1,
+        "attacker_deltaW_noise_ratio": 239.0554820772183,
+        "aggregate_rel_error": 460.7368234002023
+      }
+    ],
+    "reference": {
+      "honest_clean_attacker_weight": 0.47364744679377346,
+      "honest_clean_sigma_hat": 0.002510695598577322
+    }
+  },
+  "A2": [
+    {
+      "sigma_t": 0.05,
+      "sigma_t2": 0.010000000000000002,
+      "single_upload_err": 4.681478872312429,
+      "recovered_err_known_sigma": 8.460696753676733e-08,
+      "recovered_err_sigma_free": 0.00016495161055915818,
+      "control_fresh_noise_err": 0.9181263851101119
+    },
+    {
+      "sigma_t": 0.1,
+      "sigma_t2": 0.05,
+      "single_upload_err": 9.36295774520569,
+      "recovered_err_known_sigma": 3.7699679056661994e-07,
+      "recovered_err_sigma_free": 0.00016495210102335115,
+      "control_fresh_noise_err": 4.187931481749786
+    },
+    {
+      "sigma_t": 0.1,
+      "sigma_t2": 0.001,
+      "single_upload_err": 9.36295774520569,
+      "recovered_err_known_sigma": 2.661207287071988e-08,
+      "recovered_err_sigma_free": 0.00016495164360548552,
+      "control_fresh_noise_err": 0.09362175647255641
+    }
+  ],
+  "A3": [
+    {
+      "rank_k": 1,
+      "attacker_sigma": 0.0,
+      "colluders_weight": 0.6620937766384086,
+      "honest_pair_weight": 0.6506809914880519,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.002510697187047422
+    },
+    {
+      "rank_k": 1,
+      "attacker_sigma": 0.010000000000000002,
+      "colluders_weight": 0.3877476970334631,
+      "honest_pair_weight": 0.38680262618824107,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.010302112845870284
+    },
+    {
+      "rank_k": 1,
+      "attacker_sigma": 0.05,
+      "colluders_weight": 0.15179251947961042,
+      "honest_pair_weight": 0.1516704072085709,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.05000515734898454
+    },
+    {
+      "rank_k": 1,
+      "attacker_sigma": 0.1,
+      "colluders_weight": 0.28413688677052484,
+      "honest_pair_weight": 0.09319680049370076,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.018474724793844384
+    },
+    {
+      "rank_k": 1,
+      "attacker_sigma": 0.2,
+      "colluders_weight": 0.29717852673252737,
+      "honest_pair_weight": 0.05574999108539848,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.01707003750760854
+    },
+    {
+      "rank_k": 8,
+      "attacker_sigma": 0.0,
+      "colluders_weight": 0.6699171987561954,
+      "honest_pair_weight": 0.6506814615101788,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.0024027045619516435
+    },
+    {
+      "rank_k": 8,
+      "attacker_sigma": 0.010000000000000002,
+      "colluders_weight": 0.47879269297296945,
+      "honest_pair_weight": 0.38680275682676574,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.006471842703575182
+    },
+    {
+      "rank_k": 8,
+      "attacker_sigma": 0.05,
+      "colluders_weight": 0.43165374630242237,
+      "honest_pair_weight": 0.15167057262075623,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.00820911864899963
+    },
+    {
+      "rank_k": 8,
+      "attacker_sigma": 0.1,
+      "colluders_weight": 0.4296466641282572,
+      "honest_pair_weight": 0.09319690907322065,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.008293544610687814
+    },
+    {
+      "rank_k": 8,
+      "attacker_sigma": 0.2,
+      "colluders_weight": 0.4291365035177873,
+      "honest_pair_weight": 0.05575005036261915,
+      "fair_share": 0.2,
+      "sigma_hat_colluder": 0.008315163782047129
+    }
+  ]
+}
