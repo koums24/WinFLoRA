@@ -1,3 +1,5 @@
+> ⚠️ **This fork adds attacks on WinFLoRA's noise-aware aggregation (rescaling, fixed noise seed, Sybil pair) with results on 10 TinyLlama clients. See [ATTACKS.md](./ATTACKS.md).** The original authors' README follows below.
+
 # WinFLoRA: Incentivizing Client-Adaptive Aggregation in Federated LoRA under Privacy Heterogeneity
 
 The code of  WinFLoRA is presented here comprehensively and systematically.

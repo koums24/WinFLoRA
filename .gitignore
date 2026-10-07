@@ -1,0 +1,8 @@
+*.pdf
+Src/noisy_tiny_agnews/
+Src/preview_results/
+Src/models/
+Src/datasets/
+*.pt
+__pycache__/
+.venv/

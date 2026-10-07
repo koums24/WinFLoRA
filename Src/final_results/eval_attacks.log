@@ -1,0 +1,40 @@
+device=cuda  eval n=600  padding_side=right
+/home/labuser/winflora/Src/attack_sim.py:71: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  lp = torch.load(cand[0] / "lora.pt", map_location="cpu")
+/home/labuser/winflora/Src/eval_attacks.py:57: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  out.append({k: v.float() for k, v in torch.load(d / "classifier.pt", map_location="cpu").items()})
+[done] uniform_clean: acc=0.8483  w0=0.100 w1=0.100  fallback=0  (17s)
+[done] uniform_honest: acc=0.3533  w0=0.100 w1=0.100  fallback=0  (16s)
+[done] honest_repo: acc=0.4417  w0=0.191 w1=0.066  fallback=0  (20s)
+[done] A1_s1_repo: acc=0.2317  w0=0.045 w1=0.078  fallback=0  (20s)
+[done] A1_s128_repo: acc=0.2417  w0=0.694 w1=0.025  fallback=0  (20s)
+[done] A3_sybil_repo: acc=0.2417  w0=0.141 w1=0.141  fallback=0  (20s)
+[done] honest_paper: acc=0.5783  w0=0.186 w1=0.072  fallback=0  (20s)
+[done] A1_s1_paper: acc=0.2617  w0=0.052 w1=0.089  fallback=0  (20s)
+[done] A1_s128_paper: acc=0.2417  w0=0.260 w1=0.060  fallback=0  (20s)
+[done] A3_sybil_paper: acc=0.2417  w0=0.500 w1=0.500  fallback=0  (20s)
+ALL DONE
+device=cuda  eval n=600  padding_side=right
+/home/labuser/winflora/Src/attack_sim.py:71: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  lp = torch.load(cand[0] / "lora.pt", map_location="cpu")
+/home/labuser/winflora/Src/eval_attacks.py:57: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  out.append({k: v.float() for k, v in torch.load(d / "classifier.pt", map_location="cpu").items()})
+[skip] uniform_clean: acc=0.8483
+[skip] uniform_honest: acc=0.3533
+[skip] honest_repo: acc=0.4417
+[skip] A1_s1_repo: acc=0.2317
+[skip] A1_s128_repo: acc=0.2417
+[skip] A3_sybil_repo: acc=0.2417
+[skip] honest_paper: acc=0.5783
+[skip] A1_s1_paper: acc=0.2617
+[skip] A1_s128_paper: acc=0.2417
+[skip] A3_sybil_paper: acc=0.2417
+[done] mid_A1_s1_repo: acc=0.3350  w0=0.075 w1=0.075  fallback=0  (20s)
+[done] mid_A1_s128_repo: acc=0.2417  w0=0.798 w1=0.016  fallback=0  (20s)
+[done] mid_honestpair_repo: acc=0.3350  w0=0.075 w1=0.075  fallback=0  (20s)
+[done] mid_A3_sybil_repo: acc=0.2583  w0=0.075 w1=0.075  fallback=0  (20s)
+[done] mid_A1_s1_paper: acc=0.5083  w0=0.085 w1=0.085  fallback=0  (20s)
+[done] mid_A1_s128_paper: acc=0.2300  w0=0.260 w1=0.060  fallback=0  (20s)
+[done] mid_honestpair_paper: acc=0.5083  w0=0.085 w1=0.085  fallback=0  (20s)
+[done] mid_A3_sybil_paper: acc=0.2417  w0=0.500 w1=0.500  fallback=0  (20s)
+ALL DONE

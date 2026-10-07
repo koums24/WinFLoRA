@@ -1,0 +1,51 @@
+training exited: Wed Oct  7 08:48:07 PM WITA 2026
+/home/labuser/winflora/Src/attack_sim.py:71: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  lp = torch.load(cand[0] / "lora.pt", map_location="cpu")
+device=cuda  source=artifacts  N=10  honest sigmas=[0.013, 0.05, 0.041, 0.031, 0.009, 0.063, 0.037, 0.054, 0.062, 0.055]
+[A1] s=     1: sigma_hat=0.0999  w_att=0.045 (rank 10)  ||dW noise||/||dW||=239.06  agg_err=48.640
+[A1] s=     2: sigma_hat=0.0500  w_att=0.076 (rank 5)  ||dW noise||/||dW||=239.06  agg_err=62.523
+[A1] s=     4: sigma_hat=0.0250  w_att=0.125 (rank 2)  ||dW noise||/||dW||=239.06  agg_err=90.028
+[A1] s=     8: sigma_hat=0.0125  w_att=0.200 (rank 2)  ||dW noise||/||dW||=239.06  agg_err=135.893
+[A1] s=    16: sigma_hat=0.0062  w_att=0.303 (rank 1)  ||dW noise||/||dW||=239.06  agg_err=202.206
+[A1] s=    32: sigma_hat=0.0031  w_att=0.430 (rank 1)  ||dW noise||/||dW||=239.06  agg_err=285.699
+[A1] s=    64: sigma_hat=0.0016  w_att=0.568 (rank 1)  ||dW noise||/||dW||=239.06  agg_err=376.318
+[A1] s=   128: sigma_hat=0.0008  w_att=0.696 (rank 1)  ||dW noise||/||dW||=239.06  agg_err=460.737
+[A1] reference: honest sigma=0 client gets w=0.474
+[A2] sigma 0.05->0.010000000000000002: upload err=4.681  recovered (known sigma)=8.46e-08  (sigma-free)=1.65e-04  control w/ fresh noise=0.918
+[A2] sigma 0.1->0.05: upload err=9.363  recovered (known sigma)=3.77e-07  (sigma-free)=1.65e-04  control w/ fresh noise=4.188
+[A2] sigma 0.1->0.001: upload err=9.363  recovered (known sigma)=2.66e-08  (sigma-free)=1.65e-04  control w/ fresh noise=0.094
+[A3] K=1 sigma_att=0.000: colluders' weight=0.662  (same pair honest: 0.651, fair 2/N=0.20)
+[A3] K=1 sigma_att=0.010: colluders' weight=0.388  (same pair honest: 0.387, fair 2/N=0.20)
+[A3] K=1 sigma_att=0.050: colluders' weight=0.152  (same pair honest: 0.152, fair 2/N=0.20)
+[A3] K=1 sigma_att=0.100: colluders' weight=0.284  (same pair honest: 0.093, fair 2/N=0.20)
+[A3] K=1 sigma_att=0.200: colluders' weight=0.297  (same pair honest: 0.056, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.000: colluders' weight=0.670  (same pair honest: 0.651, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.010: colluders' weight=0.479  (same pair honest: 0.387, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.050: colluders' weight=0.432  (same pair honest: 0.152, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.100: colluders' weight=0.430  (same pair honest: 0.093, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.200: colluders' weight=0.429  (same pair honest: 0.056, fair 2/N=0.20)
+results -> attack_results/artifacts_repo/results.json
+plot -> attack_results/artifacts_repo/attacks.png
+/home/labuser/winflora/Src/attack_sim.py:71: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  lp = torch.load(cand[0] / "lora.pt", map_location="cpu")
+device=cuda  source=artifacts  N=10  honest sigmas=[0.013, 0.05, 0.041, 0.031, 0.009, 0.063, 0.037, 0.054, 0.062, 0.055]
+[A1] s=     1: sigma_hat=0.1003  w_att=0.052 (rank 10)  ||dW noise||/||dW||=239.06  agg_err=55.445
+[A1] s=     2: sigma_hat=0.0506  w_att=0.086 (rank 5)  ||dW noise||/||dW||=239.06  agg_err=70.502
+[A1] s=     4: sigma_hat=0.0263  w_att=0.135 (rank 2)  ||dW noise||/||dW||=239.06  agg_err=97.387
+[A1] s=     8: sigma_hat=0.0150  w_att=0.191 (rank 2)  ||dW noise||/||dW||=239.06  agg_err=131.079
+[A1] s=    16: sigma_hat=0.0103  w_att=0.232 (rank 1)  ||dW noise||/||dW||=239.06  agg_err=157.015
+[A1] s=    32: sigma_hat=0.0088  w_att=0.251 (rank 1)  ||dW noise||/||dW||=239.06  agg_err=168.711
+[A1] s=    64: sigma_hat=0.0084  w_att=0.257 (rank 1)  ||dW noise||/||dW||=239.06  agg_err=172.357
+[A1] s=   128: sigma_hat=0.0082  w_att=0.258 (rank 1)  ||dW noise||/||dW||=239.06  agg_err=173.331
+[A1] reference: honest sigma=0 client gets w=0.253
+[A2] sigma 0.05->0.010000000000000002: upload err=4.681  recovered (known sigma)=8.46e-08  (sigma-free)=1.65e-04  control w/ fresh noise=0.918
+[A2] sigma 0.1->0.05: upload err=9.363  recovered (known sigma)=3.77e-07  (sigma-free)=1.65e-04  control w/ fresh noise=4.188
+[A2] sigma 0.1->0.001: upload err=9.363  recovered (known sigma)=2.66e-08  (sigma-free)=1.65e-04  control w/ fresh noise=0.094
+[A3] K=8 sigma_att=0.000: colluders' weight=1.000  (same pair honest: 0.591, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.010: colluders' weight=1.000  (same pair honest: 0.369, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.050: colluders' weight=1.000  (same pair honest: 0.171, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.100: colluders' weight=1.000  (same pair honest: 0.108, fair 2/N=0.20)
+[A3] K=8 sigma_att=0.200: colluders' weight=1.000  (same pair honest: 0.065, fair 2/N=0.20)
+results -> attack_results/artifacts_paper/results.json
+plot -> attack_results/artifacts_paper/attacks.png
+DONE: Wed Oct  7 08:51:04 PM WITA 2026
